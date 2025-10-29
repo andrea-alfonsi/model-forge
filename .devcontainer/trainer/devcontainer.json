@@ -1,0 +1,28 @@
+{
+  "name": "Trainer Dev",
+  "dockerComposeFile": "../../docker-compose.yml",
+  "service": "trainer",
+  "workspaceFolder": "/workspace/trainer",
+  "shutdownAction": "stopCompose",
+
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/workspace,type=bind"
+  ],
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python"
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  },
+
+  "forwardPorts": [],
+  "postCreateCommand": "pip install -r requirements.txt || true",
+  "remoteUser": "root"
+}

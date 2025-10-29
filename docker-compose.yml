@@ -1,0 +1,120 @@
+services:
+  frontend:
+    image: node:25-alpine
+    container_name: frontend
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  backend:
+      build:
+        context: ./backend
+        dockerfile: Dockerfile
+      container_name: backend
+      volumes:
+        - ./backend:/app
+        - ./data:/data
+      working_dir: /app
+      command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      ports:
+        - "8000:8000"
+      environment:
+        - DATABASE_URL=postgresql://user:password@db:5432/mydb
+        - CELERY_BROKER_URL=redis://redis:6379/0
+        - OTEL_SERVICE_NAME="autotrain-backend"
+      depends_on:
+        db:
+          condition: service_healthy
+
+  db:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d mydb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # volumes:
+    #   - ./db:/docker-entrypoint-initdb.d
+
+  trainer:
+    build:
+      context: ./trainer
+      dockerfile: Dockerfile
+    container_name: trainer
+    volumes:
+      - ./trainer:/app
+      - ./data:/data
+      - ./models:/models
+    working_dir: /app
+    command: celery -A app worker --loglevel=info
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - CELERY_RESULT_BACKEND=db+postgresql+psycopg2://user:password@db:5432/mydb
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - OTEL_SERVICE_NAME="autotrain-trainer"
+
+  redis:
+    image: redis:8
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Flower is a real‑time monitoring and management tool for Celery
+  # flower:
+  #   image: mher/flower
+  #   command: flower --broker=redis://redis:6379/0 --db=db+postgresql://myuser:mypassword@db:5432/mydb
+  #   ports:
+  #     - "5555:5555"
+  #   depends_on:
+  #     - redis
+  #     - db
+
+  # jaeger:
+  #   image: jaegertracing/all-in-one:1.54
+  #   ports:
+  #     - "6831:6831/udp"     # For sending traces via UDP (Thrift)
+  #     - "6832:6832/udp"     # For sending traces via UDP (Thrift)
+  #     - "5775:5775/udp"     # Deprecated
+  #     - "5778:5778"         # For agent's HTTP server
+  #     - "16686:16686"       # Jaeger UI
+  #     - "14268:14268"       # HTTP collector endpoint (OTLP via HTTP)
+  #     - "4318:4318"         # OTLP HTTP endpoint
+  #     - "4317:4317"         # OTLP HTTP endpoint
+  #     - "14250:14250"       # gRPC collector endpoint
+  #     - "9411:9411"         # Zipkin-compatible endpoint
+  #   environment:
+  #     - JAEGER_OTLP_ENABLED=true
+      
+  # torchserve:
+  #   image: pytorch/torchserve:latest
+  #   container_name: torchserve
+  #   ports:
+  #     - "8080:8080"   # Inference API
+  #     - "8081:8081"   # Management API
+  #   volumes:
+  #     - ./models:/models
+  #   command: >
+  #     torchserve --start
+  #                --model-store /models
+  #                --models mymodel.mar

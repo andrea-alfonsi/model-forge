@@ -1,0 +1,58 @@
+from fastapi import FastAPI, Depends, File, UploadFile
+from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
+from sqlalchemy import text
+from typing import List
+from app.database import get_db
+from app.routers import project, dataset, model
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
+
+app = FastAPI(
+    title="AutoTrain Backend Service",
+    description="Backend service for managing datasets, projects, and models in AutoTrain.",
+    version="1.0.0",
+)
+app.include_router(project.router)
+app.include_router(dataset.router)
+app.include_router(model.router)
+
+
+# Configure OpenTelemetry Tracer
+trace.set_tracer_provider(TracerProvider())
+tracer_provider = trace.get_tracer_provider()
+
+
+jaeger_exporter = JaegerExporter(
+    agent_host_name="jaeger",
+    agent_port=6831,
+)
+span_processor = BatchSpanProcessor(jaeger_exporter)
+tracer_provider.add_span_processor(span_processor)
+
+# Instrument FastAPI and Logging
+FastAPIInstrumentor.instrument_app(app, tracer_provider=tracer_provider)
+LoggingInstrumentor().instrument(set_logging_format=True)
+
+
+@app.get("/health")
+def health_check(db: Session = Depends(get_db)):
+    # Run a simple query to test the connection
+    result = db.execute(text("SELECT version();"))
+    return {"status": "ok", "postgres_version": result.scalar()}
+
+@app.get("/test-celery")
+def test_celery():
+    from celery import Celery
+    import os
+
+    broker_url = os.getenv("CELERY_BROKER_URL", "redis://redis:6379/0")
+    back_url = os.getenv("CELERY_RESULT_BACKEND", "db+postgresql+psycopg2://user:password@db:5432/mydb")
+    celery_app = Celery("backedn", broker=broker_url, backend=back_url)
+    client = celery_app.send_task("tasks.add", args=[4, 6])
+
+    return { "result": client.get() }

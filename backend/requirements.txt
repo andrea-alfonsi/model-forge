@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+psycopg2-binary
+sqlalchemy
+pydantic
+python-multipart
+opentelemetry-sdk
+opentelemetry-exporter-otlp
+opentelemetry-instrumentation-fastapi
+opentelemetry-instrumentation-logging
+opentelemetry-exporter-jaeger
+deprecated
+celery[redis,sqlalchemy]

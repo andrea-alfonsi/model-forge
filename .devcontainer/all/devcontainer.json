@@ -1,0 +1,47 @@
+{
+  "name": "ML Platform Multi-Service Dev",
+  "dockerComposeFile": "docker-compose.yml",
+
+  "runServices": [
+    "frontend",
+    "backend",
+    "trainer",
+    "torchserve",
+    "db"
+  ],
+
+  "service": "backend",
+  "workspaceFolder": "/workspace",
+
+  "shutdownAction": "stopCompose",
+
+  "mounts": [
+    "source=${localWorkspaceFolder}/frontend,target=/workspace/frontend,type=bind,consistency=cached",
+    "source=${localWorkspaceFolder}/backend,target=/workspace/backend,type=bind,consistency=cached",
+    "source=${localWorkspaceFolder}/trainer,target=/workspace/trainer,type=bind,consistency=cached",
+    "source=${localWorkspaceFolder}/models,target=/workspace/models,type=bind,consistency=cached",
+    "source=${localWorkspaceFolder}/data,target=/workspace/data,type=bind,consistency=cached"
+  ],
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash",
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "editor.formatOnSave": true
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-azuretools.vscode-docker",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint"
+      ]
+    }
+  },
+
+  "forwardPorts": [
+    3000, 8000, 5432, 8080, 8081
+  ],
+  "remoteUser": "root"
+}
