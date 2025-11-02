@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from "react-router"; // Keep NavLink for the button, removed unused imports
-import { useBackend } from './contexts/backend';
+import { useBackend } from '../contexts/backend';
 
 const fetchProjectData = (endpoint) => {
   if ( import.meta.env.MODE === 'developments' ){
@@ -115,7 +115,7 @@ const ProjectDashboard = ({ projects }) => {
             <div className="flex justify-between items-center border-b pb-4">
                 <h1 className="text-3xl font-extrabold text-gray-900">Model Project Dashboard</h1>
                 <NavLink
-                    to="/add"
+                    to="/new-project"
                     className="flex items-center px-6 py-3 bg-violet-600 text-white rounded-xl font-bold hover:bg-violet-700 transition shadow-lg hover:scale-[1.02]"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -192,7 +192,7 @@ const ProjectDashboard = ({ projects }) => {
                                 </svg>
                                 No projects found
                                 <br />
-                                <NavLink to="/add">
+                                <NavLink to="/new-project">
                                   <small className="no-underline hover:underline">Create your first one</small>
                                 </NavLink>
                             </td>

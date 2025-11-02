@@ -1,20 +1,6 @@
 
-import logo from "./assets/react.svg"
-import { createContext, useContext, useState } from "react"
-
-const SidebarContext = createContext();
-
-const ChevronOpenIcon = ({ className = "w-5 h-5 -rotate-90" }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-  </svg>
-);
-
-const ChevronCloseIcon = ({ className = "w-5 h-5 rotate-90" }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-  </svg>
-);
+import React, { createContext, useContext, useState } from "react"
+import { useLayout } from "./contexts/layout";
 
 const AlertTriangleIcon = ({ className = "w-5 h-5" }) => (
     <svg 
@@ -37,75 +23,74 @@ const AlertTriangleIcon = ({ className = "w-5 h-5" }) => (
 
 
 const WarningAlert = ({ children }) => {
-    const { expanded } = useContext(SidebarContext)
+    const { isSidebarOpen } = useLayout()
     return (
         <div 
-            className={`mt-6 p-3 bg-yellow-50 border border-yellow-300 text-yellow-800 rounded-lg flex items-start ${ expanded ? 'w-64 space-x-3' : 'w-full'}`}
+            className={`mt-6 p-2 bg-yellow-50 border border-yellow-300 text-yellow-800 rounded-lg flex items-start ${ isSidebarOpen ? 'w-full space-x-3' : 'w-full'}`}
             role="alert"
         >
             {/* Replaced AlertTriangle with AlertTriangleIcon */}
             <AlertTriangleIcon className="w-5 h-5 flex-shrink-0 mt-0.5 text-yellow-500" />
             
             <p className="text-sm font-medium">
-                {expanded ? children: ''}
+                {isSidebarOpen ? children: ''}
             </p>
         </div>
     );
 };
 
 export default function Sidebar({ children }) {
-    const [expanded, setExpanded] = useState(false)
-    return (
-        <>
-            <aside className="h-full absolute top-0">
-                <nav className="h-full flex flex-col bg-white border-r shadow-sm">
-                    <div className="p-4 pb-2 flex justify-between items-center">
-                        <button onClick={() => setExpanded((curr) => !curr)} className="p-1.5 rounded-lg bg-gray-50 hover:bg-gray-100">
-                            {expanded ? <ChevronCloseIcon/> : <ChevronOpenIcon />}
-                        </button>
-                    </div>
+    const { isSidebarOpen } = useLayout();
 
-                    <SidebarContext.Provider value={{ expanded }}>
-                        <ul className="flex-1 px-3">
-                          {children}
-                          <WarningAlert>
-                              This software is still in alpha version, expect to see major changes
-                          </WarningAlert>
-                        </ul>
-                    </SidebarContext.Provider>
+  const sidebarWidth = isSidebarOpen ? 'w-64' : 'w-16';
 
-                    {/* <div className="border-t flex p-3">
-                        <img src={logo} className="w-10 h-10 rounded-md" />
-                        <div className={`flex justify-between items-center overflow-hidden transition-all ${expanded ? "w-52 ml-3" : "w-0"} `}>
-                            <div className="leading-4">
-                                <h4 className="font-semibold">constGenius</h4>
-                                <span className="text-xs text-gray-600">constgenius@gmail.com</span>
-                            </div>
-                        </div>
-                    </div> */}
-                </nav>
-            </aside>
-        </>
-    )
+  return (
+    <aside
+      className={`h-full bg-white pt-4 shadow-xl flex-shrink-0 transition-all duration-300 border-r border-gray-200 ${sidebarWidth}`}
+    >
+      <nav className="h-full flex flex-col">
+        <ul className="flex-1 px-3">
+          {children}
+          <WarningAlert>
+            You're in the deep end! This is the Alpha version. If you see something change unexpectedly, just remember: we're building the plane while flying it. Your feedback is gold!
+          </WarningAlert>
+        </ul>
+        <div className="p-3 border-t border-gray-100">
+          <div className={`flex items-center text-gray-500 transition-all duration-300 ${isSidebarOpen ? 'justify-start' : 'justify-center'}`}>
+            <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center font-bold text-gray-700">
+              U
+            </div>
+            <span className={`overflow-hidden transition-all duration-300 ${isSidebarOpen ? "w-40 ml-3 text-sm" : "w-0"}`}>
+              User Profile
+            </span>
+          </div>
+        </div>
+      </nav>
+    </aside>
+  );
 }
 
-export function SidebarItem({ icon, text, active, alert }) {
-    const { expanded } = useContext(SidebarContext)
-    return (
-        <li className={`relative flex items-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer transition-colors group ${active ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800" : "hover:bg-indigo-50 text-gray-600"}`}>
-            {icon}
-            <span className={`overflow-hidden transition-all ${expanded ? "w-52 ml-3" : "w-0"}`}>{text}</span>
-            {alert && (
-                <div className={`absolute right-2 w-2 h-2 rounded bg-indigo-400 ${expanded ? "" : "top-2"}`}>
+export const SidebarItem = ({ icon, text, active, onClick }) => {
+  const { isSidebarOpen } = useLayout();
+  const baseClasses = "relative flex items-center py-2 px-3 my-1 font-medium rounded-xl cursor-pointer transition-all duration-300 ";
+  const activeClasses = active
+    ? "bg-indigo-600 text-white shadow-md hover:bg-indigo-700"
+    : "hover:bg-indigo-50 text-gray-600 hover:text-indigo-600";
 
-                </div>
-            )}
-
-            {!expanded && (
-                <div className={`absolute left-full rounded-md px-2 py-1 ml-6 bg-indigo-100 text-indigo-800 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0`}>
-                    {text}
-                </div>
-            )}
-        </li>
-    )
-}
+  return (
+    <li className={baseClasses + activeClasses} onClick={onClick}>
+      {React.cloneElement(icon, { className: "w-5 h-5" })}
+      <span
+        className={`overflow-hidden transition-all duration-300 ${isSidebarOpen ? "w-44 ml-3" : "w-0"}`}
+      >
+        {text}
+      </span>
+      {/* Tooltip for collapsed state */}
+      {!isSidebarOpen && (
+        <div className="absolute left-full rounded-md px-2 py-1 ml-6 bg-indigo-100 text-indigo-800 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 whitespace-nowrap">
+          {text}
+        </div>
+      )}
+    </li>
+  );
+};

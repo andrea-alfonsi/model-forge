@@ -18,7 +18,7 @@ const CheckIcon = ({ className = "w-5 h-5" }) => (
 
 const StepIndicator = ({ steps, currentStep, goToStep }) => {
   return (
-    <div className="p-6 bg-white rounded-2xl shadow-xl w-full sticky top-4 md:top-20">
+    <div className="p-6 bg-white rounded-2xl shadow-xl w-full sticky top-4 md:top-4">
       <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-3">Training Pipeline</h2>
       <ol className="relative space-y-4">
         {steps.map((step, index) => {
@@ -80,7 +80,7 @@ const initialFormData = {
   },
 };
 
-export default function NewProject() {
+export default function() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState(initialFormData);
   const navigate = useNavigate();

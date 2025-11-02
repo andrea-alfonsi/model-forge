@@ -118,7 +118,7 @@ const TypeaheadDropdown = ({ options, placeholder, onSelect }) => {
     );
 };
 
-const InitialInputForm = ({ onSubmit, error }) => {
+const InitialInputForm = ({ onSubmit, error, availableEndpoints }) => {
     const [endpoint, setEndpoint] = useState('');
 
     const handleSubmit = (e) => {
@@ -137,8 +137,8 @@ const InitialInputForm = ({ onSubmit, error }) => {
                 <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Select or type the backend endpoint:</label>
                     <TypeaheadDropdown 
-                        options={['http://localhost:8000']}
-                        placeholder="Start typing a task type..."
+                        options={availableEndpoints}
+                        placeholder="Choose the backend server endpoint..."
                         onSelect={setEndpoint}
                     />
                     <p className="mt-1 text-xs text-red-600 font-medium">
@@ -174,15 +174,23 @@ export const BackendProvider = ({ children }) => {
     const [initialData, setInitialData] = useState(null); 
     const [isInputRequired, setIsInputRequired] = useState(true);
     const [error, setError] = useState(null)
+    let availableEndpoints;
+    try{
+        availableEndpoints = JSON.parse(window.localStorage.getItem("contexts.backend.pastAvailableContexts")) ?? ['http://localhost:8000']
+    } catch (e){
+        availableEndpoints = ['http://localhost:8000']
+    }
 
     const handleDataSubmit = (data) => {
 
       if ( data.endpoint ) {
-        console.log( data.endpoint )
             fetch( data.endpoint ).then( res => {
               if( res.ok ){
                 setInitialData(data);
                 setIsInputRequired(false);
+                if ( !availableEndpoints.includes(data.endpoint) ){
+                    window.localStorage.setItem("contexts.backend.pastAvailableContexts", JSON.stringify([...availableEndpoints, data.endpoint]))
+                }
               } else {
                 setError("Backend is not responding, check its state or change backend (ERROR: " + e + ")")
                 setInitialData(null);
@@ -215,7 +223,10 @@ export const BackendProvider = ({ children }) => {
     return (
         <BackendContext.Provider value={contextValue}>
             {isInputRequired ? (
-                <InitialInputForm onSubmit={handleDataSubmit} error={error} />
+                <InitialInputForm 
+                    onSubmit={handleDataSubmit} 
+                    error={error}
+                    availableEndpoints={availableEndpoints} />
             ) : (
                 children
             )}

@@ -95,8 +95,8 @@ const TrainingReview = ({ formData = {}, nextStep, prevStep }) => {
     const isSGD = trainingOptions.optimizationAlgorithm === 'SGD';
 
     return (
-        <div className="p-6 bg-white rounded-xl shadow-2xl max-w-4xl mx-auto">
-            <h2 className="text-3xl font-extrabold mb-2 text-gray-900">5. Review and Start Training</h2>
+        <div className="">
+            <h2 className="text-2xl font-bold mb-4 text-gray-800">5. Review and Start Training</h2>
             <p className="text-gray-600 mb-6 border-b pb-4">
                 Review your final configuration before launching the model training job.
             </p>

@@ -1,7 +1,7 @@
 import { useBackend } from "./contexts/backend"
 import { useState } from "react";
 
-export default () => {
+export default ({toggleSidebar, isSidebarOpen}) => {
 
   const { reset, isSetupComplete } = useBackend()
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -11,16 +11,36 @@ export default () => {
         setIsModalOpen(false);
     };
 
-  return <nav
-      className="px-4 py-2 flex justify-between items-center bg-white dark:bg-gray-800 border-b-2 dark:border-gray-600 sticky top-0"
-      style={{marginLeft: 68,width: 'calc( 100% - 68px )'}}>
+  return <header
+      className="fixed top-0 left-0 right-0 h-16 bg-white shadow-md flex items-center justify-between px-6 z-20"
+      >
 
-      <a className="text-2xl font-bold text-violet-600 dark:text-white" href="#">
-          ModelForge
-      </a>
+      <button
+        onClick={toggleSidebar}
+        className="p-2 mr-4 rounded-full text-indigo-600 hover:bg-indigo-50 transition-colors"
+        title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-6 w-6 transform transition-transform duration-300"
+          viewBox="0 0 24 24"
+          strokeWidth="2"
+          stroke="currentColor"
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+          {isSidebarOpen ? (
+             <path d="M18.835 5.666l-5.656 5.657a2 2 0 0 0 0 2.828l5.656 5.657M5.165 5.666l5.656 5.657a2 2 0 0 1 0 2.828l-5.656 5.657"/>
+          ) : (
+            <path d="M9 6l6 6l-6 6"/>
+          )}
+        </svg>
+      </button>
 
       <ul
-          className="hidden absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 lg:mx-auto lg:flex lg:items-center lg:w-auto lg:space-x-6">
+          className="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 lg:mx-auto lg:flex lg:items-center lg:w-auto lg:space-x-6">
           <li>
               <div className=" relative mx-auto text-gray-600">
                   <input className="border border-gray-300 placeholder-current h-10 px-5 pr-16  rounded-lg text-sm focus:outline-none dark:bg-gray-500 dark:border-gray-50 dark:text-gray-200 " type="search" name="search" placeholder="Search" />
@@ -54,7 +74,7 @@ export default () => {
 
       <ResetConfirmationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onConfirmReset={handleConfirmReset}></ResetConfirmationModal>
 
-  </nav>
+  </header>
 }
 
 const ResetConfirmationModal = ({ isOpen, onClose, onConfirmReset }) => {
