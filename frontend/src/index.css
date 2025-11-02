@@ -12,3 +12,7 @@
   --color-error: #000000;
   --color-info: #000000;
 }
+
+* {
+  box-sizing: border-box;
+}

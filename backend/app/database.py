@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.models.base import Base
-from app.models import project, dataset, model
+from app.models import project, dataset, model, training_job
 
 DATABASE_URL = "postgresql+psycopg2://user:password@db:5432/mydb"
 

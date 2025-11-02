@@ -15,4 +15,4 @@ class TrainingJob(Base):
     model_id = Column(Integer, ForeignKey("models.id"), nullable=True)
 
     project = relationship("Project", back_populates="training_jobs", uselist=False)
-    model = relationship("Model", back_populates="traning_job", uselist=False)
+    model = relationship("Model", back_populates="training_job", uselist=False)

@@ -5,9 +5,9 @@ import enum
 from app.models.base import Base
 
 class ProjectType(enum.Enum):
-    tabular_classification = "tabular_classification"
-    tabular_regression = "tabular_regression"
-    timeseries_forecasting = "timeseries_forecasting"
+    tabular_classification = "tabular.tabular-classification"
+    tabular_regression = "tabular.tabular-regression"
+    timeseries_forecasting = "tabular.time-series-forecasting"
 
 class Project(Base):
     __tablename__ = "projects"

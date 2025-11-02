@@ -19,6 +19,10 @@ async def create_model(model: model.ModelCreate, db: Session = Depends(get_db)):
 async def list_models(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     return crud.get_models(db, skip=skip, limit=limit)
 
+@router.get("/available/{task}", response_model=List[str])
+async def available_models(task: str):
+    return ["ok"]
+
 @router.get("/{model_id}", response_model=model.ModelRead)
 async def read_model(model_id: int, db: Session = Depends(get_db)):
     db_model = crud.get_model(db, model_id=model_id)

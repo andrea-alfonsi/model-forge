@@ -1,8 +1,7 @@
-from fastapi import FastAPI, Depends, File, UploadFile
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import text
-from typing import List
 from app.database import get_db
 from app.routers import project, dataset, model
 from opentelemetry import trace
@@ -20,6 +19,20 @@ app = FastAPI(
 app.include_router(project.router)
 app.include_router(dataset.router)
 app.include_router(model.router)
+
+origins = [
+    "*", # Allows ALL origins. Be CAREFUL with this in Production!
+    # "http://localhost:3000", # Example for a specific React dev server
+    # "http://127.0.0.1:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True, # Allow cookies/authentication headers
+    allow_methods=["*"],    # Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"],    # Allow all headers (Authorization, Content-Type, etc.)
+)
 
 
 # Configure OpenTelemetry Tracer
@@ -44,6 +57,10 @@ def health_check(db: Session = Depends(get_db)):
     # Run a simple query to test the connection
     result = db.execute(text("SELECT version();"))
     return {"status": "ok", "postgres_version": result.scalar()}
+
+@app.get("/")
+def index():
+    return "Server is up and running"
 
 @app.get("/test-celery")
 def test_celery():
