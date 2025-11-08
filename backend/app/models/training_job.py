@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Enum, ForeignKey, func
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Enum, ForeignKey, func, JSON
 from datetime import datetime
 from sqlalchemy.orm import relationship
 import enum
@@ -10,9 +10,12 @@ class TrainingJob(Base):
     id = Column(Integer, primary_key=True, index=True)
     owner_id = Column(Integer, nullable=False, default=0)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
-    ended_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow, server_default=func.now(), server_onupdate=func.now())
-    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True)
+    started_at = Column(DateTime, nullable=True)
+    ended_at = Column(DateTime, nullable=True)
+    end_reason = Column(String, nullable=True)
+    dataset_id = Column(Integer, ForeignKey("datasets.id"), nullable=True)
     model_id = Column(Integer, ForeignKey("models.id"), nullable=True)
+    hyperparameters = Column(JSON, nullable=False, default=dict)
 
-    project = relationship("Project", back_populates="training_jobs", uselist=False)
+    dataset = relationship("Dataset", back_populates="training_jobs", uselist=False)
     model = relationship("Model", back_populates="training_job", uselist=False)

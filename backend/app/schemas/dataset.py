@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 from datetime import datetime
-import enum
 from fastapi import UploadFile
 from app.models.dataset import DatasetType
 

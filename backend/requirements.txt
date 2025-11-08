@@ -2,6 +2,7 @@ fastapi
 uvicorn[standard]
 psycopg2-binary
 sqlalchemy
+sqlmodel
 pydantic
 python-multipart
 opentelemetry-sdk
@@ -11,3 +12,4 @@ opentelemetry-instrumentation-logging
 opentelemetry-exporter-jaeger
 deprecated
 celery[redis,sqlalchemy]
+alembic

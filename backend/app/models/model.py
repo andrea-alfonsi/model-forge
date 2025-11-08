@@ -5,6 +5,7 @@ from app.models.base import Base
 import enum
 
 class ModelTask(enum.Enum):
+    generic = "generic"
     tabular_classification = "tabular_classification"
     tabular_regression = "tabular_regression"
     timeseries_forecasting = "timeseries_forecasting"
@@ -12,6 +13,11 @@ class ModelTask(enum.Enum):
 
 class Model(Base):
     __tablename__ = "models"
+    __allow_unmapped__ = True
+    __mapper_args__ = {
+        "polymorphic_on": "task",
+        "polymorphic_identity": ModelTask.generic
+    }
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)

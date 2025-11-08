@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.database import get_db
-from app.routers import project, dataset, model
+from app.routers import dataset, model
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
@@ -16,7 +16,6 @@ app = FastAPI(
     description="Backend service for managing datasets, projects, and models in AutoTrain.",
     version="1.0.0",
 )
-app.include_router(project.router)
 app.include_router(dataset.router)
 app.include_router(model.router)
 

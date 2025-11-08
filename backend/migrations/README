@@ -1,0 +1,1 @@
+On new version udates run ```alembic revision --autogenerate -m "Add new column to dataset table"``` to save changes and ```alembic upgrade head``` to apply
