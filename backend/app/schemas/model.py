@@ -11,7 +11,6 @@ class ModelBase(BaseModel):
     name: str
     description: str | None = None
     owner_id: int
-    is_active: bool = True
 
 class ModelCreateRequest(BaseModel):
     name: str = Field(description="The name of the new model, the combination user/model-name must be unique")

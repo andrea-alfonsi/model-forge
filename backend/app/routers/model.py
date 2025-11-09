@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
@@ -17,8 +17,8 @@ async def list_models(skip: int = 0, limit: int = 10, db: Session = Depends(get_
     return crud.get_models(db, skip=skip, limit=limit)
 
 @router.post("/", response_model=ModelCreateResponse)
-async def create_model(model: ModelCreateRequest, db: Session = Depends(get_db)):
-    return crud.create_model(db=db, model=model)
+async def create_model(model: ModelCreateRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    return crud.create_model(db=db, model=model, background_tasks=background_tasks)
 
 @router.options("/", response_model=List[str])
 async def available_models(task: Optional[ModelTask]):

@@ -23,7 +23,6 @@ class Model(Base):
     description = Column(String, nullable=True)
     owner_id = Column(Integer, nullable=False, default=0)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
-    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow, server_default=func.now(), server_onupdate=func.now())
     task = Column(Enum(ModelTask), nullable=False)
     size = Column(Integer, nullable=False, default=0)
     uri = Column(String, nullable=True)

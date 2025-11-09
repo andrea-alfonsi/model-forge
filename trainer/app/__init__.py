@@ -1,8 +1,34 @@
 import os
-from celery import Celery
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
+from opentelemetry.instrumentation.celery import CeleryInstrumentor
 
-broker_url = os.getenv("CELERY_BROKER_URL", "redis://redis:6379/0")
-backend_url = os.getenv("CELERY_RESULT_BACKEND", "db+postgresql+psycopg2://user:password@db:5432/mydb")
+from celery import Celery
+from celery.signals import worker_process_init
+
+trace.set_tracer_provider(TracerProvider())
+tracer_provider = trace.get_tracer_provider()
+
+
+jaeger_exporter = JaegerExporter(
+    agent_host_name="jaeger",
+    agent_port=6831,
+)
+span_processor = BatchSpanProcessor(jaeger_exporter)
+tracer_provider.add_span_processor(span_processor)
+
+# Instrument FastAPI and Logging
+@worker_process_init.connect(weak=False)
+def init_celery_tracing(*args, **kwargs):
+    CeleryInstrumentor().instrument()
+LoggingInstrumentor().instrument(set_logging_format=True)
+
+
+broker_url = os.environ["CELERY_BROKER_URL"]
+backend_url = os.environ["CELERY_RESULT_BACKEND"]
 
 app = Celery("trainer", broker=broker_url, backend=backend_url)
 
@@ -14,6 +40,6 @@ app.conf.update(
     enable_utc=True,
 )
 
-@app.task(name="models.train")
-def train_model(job_id: int):
-    return {"status": "success", "job_id": job_id}
+@app.task(bind=True, name="trainer.train_model")
+def train_model(self, job_id: int):
+    return {"job_id": job_id, "model_uri": "file://model.uri", "logs_uri": "file://logs_uri"}

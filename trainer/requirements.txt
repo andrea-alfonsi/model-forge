@@ -1,3 +1,7 @@
 celery[redis,sqlalchemy]
 psycopg2-binary
 watchdog
+opentelemetry-instrumentation-celery
+opentelemetry-instrumentation-logging
+opentelemetry-exporter-jaeger
+deprecated

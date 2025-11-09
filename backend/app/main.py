@@ -52,10 +52,8 @@ LoggingInstrumentor().instrument(set_logging_format=True)
 
 
 @app.get("/health")
-def health_check(db: Session = Depends(get_db)):
-    # Run a simple query to test the connection
-    result = db.execute(text("SELECT version();"))
-    return {"status": "ok", "postgres_version": result.scalar()}
+def health_check():
+    return {"status": "ok"}
 
 @app.get("/")
 def index():
