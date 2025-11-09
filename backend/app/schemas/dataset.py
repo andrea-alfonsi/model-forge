@@ -13,7 +13,16 @@ class DatasetBase(BaseModel):
 class DatasetCreate(BaseModel):
     name: str
     description: str | None = None
-    dataset_type: DatasetType
+    type: DatasetType
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                { "name": "MyTabularDataset", "descritpion": None, "type": DatasetType.tabular },
+                { "name": "MyDataset", "descritpion": "This dataset requires to be converted into a specific one before it can be used", "type": DatasetType.generic }
+            ]
+        }
+    }
 
 class DatasetUpdate(BaseModel):
     name: str | None = None

@@ -12,7 +12,7 @@ class DatasetInfo(BaseModel):
 
 class TabularDatasetInfo(DatasetInfo):
     n_rows: Optional[int]
-    schema: List[Dict[str, str]]
+    columns: List[Dict[str, str]]
 
 class DatasetType(enum.Enum):
     generic = "generic"
@@ -29,7 +29,7 @@ class Dataset(Base):
     __tablename__ = "datasets"
     __allow_unmapped__ = True
     __mapper_args__ = {
-        "polymorphic_on": "dataset_type",
+        "polymorphic_on": "type",
         "polymorphic_identity": DatasetType.generic
     }
 
@@ -40,11 +40,10 @@ class Dataset(Base):
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow, server_default=func.now(), server_onupdate=func.now())
-    dataset_type = Column(Enum(DatasetType), nullable=False)
+    type = Column(Enum(DatasetType), nullable=False)
     uri = Column(String, nullable=True)
     
-    project = relationship("Project", back_populates="dataset")
-    training_jobs = relationship("TrainingJob", back_populates="project")
+    training_jobs = relationship("TrainingJob", back_populates="dataset")
 
     @hybrid_property
     def dataset_info(self):
@@ -89,7 +88,7 @@ class TabularDataset(Dataset):
                 for col_type in self.columns.split(',')
             ]
         return TabularDatasetInfo(
-            schema=schema_data,
+            columns=schema_data,
             n_rows=self.n_rows
         )
 

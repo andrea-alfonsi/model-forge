@@ -42,8 +42,6 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: mydb
-    ports:
-      - "5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d mydb"]
       interval: 10s
@@ -62,7 +60,7 @@ services:
       - ./data:/data
       - ./models:/models
     working_dir: /app
-    command: celery -A app worker --loglevel=info
+    command: watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery -A app worker --concurrency=1 --loglevel=INFO
     depends_on:
       db:
         condition: service_healthy
@@ -84,14 +82,13 @@ services:
       retries: 5
 
   # Flower is a real‑time monitoring and management tool for Celery
-  # flower:
-  #   image: mher/flower
-  #   command: flower --broker=redis://redis:6379/0 --db=db+postgresql://myuser:mypassword@db:5432/mydb
-  #   ports:
-  #     - "5555:5555"
-  #   depends_on:
-  #     - redis
-  #     - db
+  flower:
+    image: mher/flower
+    command: celery --broker=redis://redis:6379/0 flower
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
 
   jaeger:
     image: jaegertracing/all-in-one:1.54

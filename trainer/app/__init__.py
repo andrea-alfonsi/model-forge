@@ -14,7 +14,6 @@ app.conf.update(
     enable_utc=True,
 )
 
-
-@app.task(name="tasks.train")
-def train_model(model_uri: str, dataset_uri: str, training_options: dict, job_id: int):
-    return {"status": "success", "model_uri": model_uri, "dataset_uri": dataset_uri, "training_options": training_options, "job_id": job_id}
+@app.task(name="models.train")
+def train_model(job_id: int):
+    return {"status": "success", "job_id": job_id}

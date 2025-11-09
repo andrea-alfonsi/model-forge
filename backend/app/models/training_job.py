@@ -16,6 +16,7 @@ class TrainingJob(Base):
     dataset_id = Column(Integer, ForeignKey("datasets.id"), nullable=True)
     model_id = Column(Integer, ForeignKey("models.id"), nullable=True)
     hyperparameters = Column(JSON, nullable=False, default=dict)
+    report = Column(String, nullable=True)
 
     dataset = relationship("Dataset", back_populates="training_jobs", uselist=False)
     model = relationship("Model", back_populates="training_job", uselist=False)

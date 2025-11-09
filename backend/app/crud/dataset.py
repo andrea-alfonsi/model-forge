@@ -13,7 +13,7 @@ DATASET_CLASS_MAP = {
 
 def create_dataset(db: Session, dataset: DatasetCreate):
     try:
-        TargetClass = DATASET_CLASS_MAP[dataset.dataset_type]
+        TargetClass = DATASET_CLASS_MAP[dataset.type]
     except KeyError:
         # Handle unknown type gracefully, maybe default to the base class or raise error
         TargetClass = Dataset

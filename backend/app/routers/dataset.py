@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, Form
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 
 from app.crud import dataset as crud
 from app.schemas import dataset
 from app.database import get_db
+from app.models.dataset import DatasetType
 
 router = APIRouter(
     prefix="/datasets",       # all endpoints start with /datasets

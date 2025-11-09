@@ -60,15 +60,3 @@ def health_check(db: Session = Depends(get_db)):
 @app.get("/")
 def index():
     return "Server is up and running"
-
-@app.get("/test-celery")
-def test_celery():
-    from celery import Celery
-    import os
-
-    broker_url = os.getenv("CELERY_BROKER_URL", "redis://redis:6379/0")
-    back_url = os.getenv("CELERY_RESULT_BACKEND", "db+postgresql+psycopg2://user:password@db:5432/mydb")
-    celery_app = Celery("backedn", broker=broker_url, backend=back_url)
-    client = celery_app.send_task("tasks.add", args=[4, 6])
-
-    return { "result": client.get() }
