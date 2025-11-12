@@ -36,14 +36,14 @@ def save_training_result(task):
 
 def create_model(db: Session, model: ModelCreateRequest, background_tasks: BackgroundTasks):
     db_model = Model(name=model.name,description=model.description,task=model.task,derived_from_id=model.derived_from_id)
-    db_training = TrainingJob(dataset_id=model.training_dataset_id, model=db_model,hyperparameters=model.trainingHyperparameters.dict())
+    db_training = TrainingJob(dataset_id=model.training_dataset_id, model=db_model,hyperparameters=model.trainingHyperparameters.dict(), queue="cpu")
     db.add(db_model)
     db.add(db_training)
     db.commit()
     db.refresh(db_model)
-    task = celery_app.send_task("trainer.train_model", kwargs={"job_id": db_training.id})
+    task = celery_app.send_task("train_model", kwargs={"job_id": db_training.id, 'model_id': model.id, 'dataset_id': model.training_dataset_id, 'configuration_json': model.trainingHyperparameters.dict()}, queue="cpu")
     background_tasks.add_task( save_training_result, task )
-    return {'training_id': db_training.id}
+    return {'training_id': db_training.id} 
 
 def get_model(db: Session, model_id: int):
     return db.query(Model).filter(Model.id == model_id).first()

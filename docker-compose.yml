@@ -57,10 +57,8 @@ services:
     container_name: trainer
     volumes:
       - ./trainer:/app
-      - ./data:/data
-      - ./models:/models
     working_dir: /app
-    command: watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery -A app worker -n trainer_worker@%h --concurrency=${CONCURRENCY:-1} --loglevel=INFO
+    command: watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery -A app.celery_app.celery_app worker -n trainer_worker@%h -Q ${QUEUE:-cpu} --loglevel=INFO
     depends_on:
       db:
         condition: service_healthy
@@ -70,7 +68,7 @@ services:
       - CELERY_RESULT_BACKEND=db+postgresql+psycopg2://user:password@db:5432/mydb
       - CELERY_BROKER_URL=redis://redis:6379/0
       - OTEL_SERVICE_NAME=trainer
-      - CONCURRENCY=1
+      - QUEUE=cpu
 
   redis:
     image: redis:8
