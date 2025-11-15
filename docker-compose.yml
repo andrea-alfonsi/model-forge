@@ -50,6 +50,20 @@ services:
     # volumes:
     #   - ./db:/docker-entrypoint-initdb.d
 
+  
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com   # login email
+      PGADMIN_DEFAULT_PASSWORD: admin            # login password
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
   trainer:
     build:
       context: ./trainer

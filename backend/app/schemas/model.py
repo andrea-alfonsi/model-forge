@@ -2,9 +2,7 @@ from pydantic import BaseModel,Field
 from datetime import datetime
 from app.models.model import ModelTask
 from typing import Optional
-
-class TrainingJobHyperparameter(BaseModel):
-    batch: int
+from app.models.model import ModelsAvailable, Hyperpamerters
 
 class ModelBase(BaseModel):
     id: int
@@ -14,11 +12,12 @@ class ModelBase(BaseModel):
 
 class ModelCreateRequest(BaseModel):
     name: str = Field(description="The name of the new model, the combination user/model-name must be unique")
-    description: Optional[str]
+    kind: ModelsAvailable
     task: ModelTask
-    derived_from_id: int
+    trainingHyperparameters: Hyperpamerters
     training_dataset_id: int
-    trainingHyperparameters: TrainingJobHyperparameter = Field()
+    description: Optional[str]
+    derived_from_id: Optional[int] = Field(default=None)
 
 class ModelCreateResponse(BaseModel):
     training_id: int

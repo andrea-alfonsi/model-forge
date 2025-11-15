@@ -12,8 +12,8 @@ from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 
 app = FastAPI(
-    title="AutoTrain Backend Service",
-    description="Backend service for managing datasets, projects, and models in AutoTrain.",
+    title="ModelForge Backend Service",
+    description="Backend service for managing datasets, projects, and models in ModelForge.",
     version="1.0.0",
 )
 app.include_router(dataset.router)

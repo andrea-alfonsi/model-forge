@@ -7,7 +7,6 @@ class DatasetBase(BaseModel):
     id: int
     name: str
     description: str | None = None
-    owner_id: int
     is_active: bool = True
 
 class DatasetCreate(BaseModel):

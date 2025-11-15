@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Enum, func, ForeignKey
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.hybrid import hybrid_property
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional, List, Dict
@@ -36,7 +35,6 @@ class Dataset(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     description = Column(String, nullable=True)
-    owner_id = Column(Integer, nullable=False, default=0)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow, server_default=func.now(), server_onupdate=func.now())
@@ -45,7 +43,7 @@ class Dataset(Base):
     
     training_jobs = relationship("TrainingJob", back_populates="dataset")
 
-    @hybrid_property
+    @property
     def dataset_info(self):
         """
         Getter for the computed DatasetInfo object.
@@ -75,8 +73,10 @@ class TabularDataset(Dataset):
     )
     n_rows: Optional[int] = Column(Integer, nullable=True )
     columns: Optional[str] = Column(String, nullable=True )
+    features: Optional[str] = Column(String, nullable=True )
+    labels: Optional[str] = Column(String, nullable=True )
 
-    @hybrid_property
+    @property
     def dataset_info(self):
         """
         Getter for the computed TabularDatasetInfo object.
@@ -95,7 +95,6 @@ class TabularDataset(Dataset):
 
     def validate_new_file( self, tmp_path: str ) -> Optional[str]:
         import csv
-        ColumnType = str
 
         def is_int(s):
             try:
@@ -113,7 +112,7 @@ class TabularDataset(Dataset):
             except ValueError:
                 return False
 
-        def _infer_single_value_type(value: str) -> ColumnType:
+        def _infer_single_value_type(value: str) -> str:
             v = value.strip()
             if not v:
                 return "string" 
@@ -124,7 +123,7 @@ class TabularDataset(Dataset):
             else:
                 return "string"
 
-        def _reconcile_types(existing_type: ColumnType, new_type: ColumnType) -> ColumnType:
+        def _reconcile_types(existing_type: str, new_type: str) -> str:
             # Logic: integer -> float -> string
             if existing_type == new_type: return existing_type
             if (existing_type == "integer" and new_type == "float") or (existing_type == "float" and new_type == "integer"):
@@ -146,7 +145,7 @@ class TabularDataset(Dataset):
                 reader = csv.reader(file)
                 
                 # --- Initializing Schema Variables ---
-                column_types: List[ColumnType] = []
+                column_types: List[str] = []
                 column_names: List[str] = []
                 data_row_count = 0
                 

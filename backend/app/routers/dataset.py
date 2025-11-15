@@ -12,7 +12,7 @@ router = APIRouter(
     tags=["datasets"],        # groups them in the docs
 )
 @router.get("/", response_model=List[dataset.DatasetRead])
-async def list_datasets(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+async def list_datasets(skip: int = 0, limit: int = 10, type: Optional[DatasetType] = None, db: Session = Depends(get_db)):
     return crud.get_datasets(db, skip=skip, limit=limit)
 
 @router.get("/{dataset_id}", response_model=dataset.DatasetRead)

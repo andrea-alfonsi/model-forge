@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
-from typing import List, Optional, Literal
+from typing import List
 
 from app.crud import model as crud
 from app.schemas.model import ModelRead, ModelCreateResponse, ModelCreateRequest
 from app.database import get_db
-from app.models.model import AllModelsEnum, RandomForestForClassification
+from app.models.model import ModelsAvailable
 
 router = APIRouter(
     prefix="/models",
@@ -21,13 +21,11 @@ async def create_model(model: ModelCreateRequest, background_tasks: BackgroundTa
     return crud.create_model(db=db, model=model, background_tasks=background_tasks)
 
 @router.get("/training_options", response_model=dict)
-async def get_model_training_options(name: AllModelsEnum):
+async def get_model_training_options(name: ModelsAvailable):
     """
     List all the options that are available for the model
     """
-    if name == AllModelsEnum.RandomForestForClassification:
-        return RandomForestForClassification.training_config()
-    return {"type": name}
+    return ModelsAvailable.get_class(name).training_hyperparameters().model_json_schema().get("properties")
 
 @router.get("/{model_id}", response_model=ModelRead)
 async def read_model(model_id: int, db: Session = Depends(get_db)):

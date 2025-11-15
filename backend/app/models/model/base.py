@@ -1,20 +1,18 @@
-from sqlalchemy import Column, Integer, String, Enum, DateTime, func, ForeignKey
 from datetime import datetime
+from sqlalchemy import Column, Integer, String, Enum, DateTime, func, ForeignKey
 from sqlalchemy.orm import relationship
 from app.models.base import Base
-import enum
+from app.models.model.tasks import ModelTask
+from pydantic import BaseModel, Field
 
-class ModelTask(enum.Enum):
-    tabular_classification = "tabular_classification"
-    tabular_regression = "tabular_regression"
-    timeseries_forecasting = "timeseries_forecasting"
-
+class TrainingJobHyperparameter(BaseModel):
+    batch: int = Field(default=10, gt=0)
 
 class Model(Base):
     __tablename__ = "models"
     __allow_unmapped__ = True
     __mapper_args__ = {
-        "polymorphic_on": "task",
+        "polymorphic_on": "kind",
         "polymorphic_identity": None
     }
 
@@ -22,11 +20,11 @@ class Model(Base):
     task = Column(Enum(ModelTask), nullable=False)
     name = Column(String, nullable=False)
     description = Column(String, nullable=True)
-    owner_id = Column(Integer, nullable=False, default=0)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
     size = Column(Integer, nullable=False, default=0)
     uri = Column(String, nullable=True)
     derived_from_id = Column(Integer, ForeignKey('models.id'), nullable=True)
+    kind = Column(String, nullable=False)
 
     original_model = relationship(
             'Model',
@@ -36,10 +34,10 @@ class Model(Base):
     training_job = relationship("TrainingJob", back_populates="model", uselist=False)
 
     @staticmethod
-    def training_config():
+    def training_hyperparameters() -> type[TrainingJobHyperparameter]:
         """
         Getter for the training parameters
         This will be overridden by subclasses (polymorphism).
         """
         # Return the base Info object
-        return dict()
+        return TrainingJobHyperparameter

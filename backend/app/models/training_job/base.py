@@ -8,11 +8,11 @@ class Queues(enum.Enum):
     CPU = "cpu"
     T4 = "gpu_t4"
 
+
 class TrainingJob(Base):
     __tablename__ = "training_jobs"
 
     id = Column(Integer, primary_key=True, index=True)
-    owner_id = Column(Integer, nullable=False, default=0)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
     started_at = Column(DateTime, nullable=True)
     ended_at = Column(DateTime, nullable=True)
