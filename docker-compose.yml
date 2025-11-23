@@ -13,11 +13,13 @@ services:
     environment:
       - VITE_OTEL_URL=http://localhost:4318/v1/traces
       - VITE_SERVICE_NAME=frontend
+      # Comma separated versions to build the frontend for
+      - VITE_APP_VERSIONS=1.0
 
   backend:
       build:
-        context: ./backend
-        dockerfile: Dockerfile
+        context: .
+        dockerfile: ./backend/Dockerfile
       container_name: backend
       volumes:
         - ./backend:/app
@@ -57,17 +59,17 @@ services:
     container_name: pgadmin
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@example.com   # login email
-      PGADMIN_DEFAULT_PASSWORD: admin            # login password
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "8080:80"
+      - "8074:80"
     depends_on:
       - db
 
   trainer:
     build:
-      context: ./trainer
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./trainer/Dockerfile
     container_name: trainer
     volumes:
       - ./trainer:/app

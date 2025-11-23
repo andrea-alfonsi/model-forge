@@ -1,4 +1,3 @@
-# Use a lightweight Python base
 FROM python:3.13-slim
 
 # Set working directory
@@ -10,14 +9,14 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
  && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for caching
-COPY requirements.txt .
 
-# Install Python dependencies
+COPY ./backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy app code
-COPY . .
+COPY ../libforge /tmp/libforge
+RUN pip install /tmp/libforge
+
+COPY ./backend .
 
 # Expose FastAPI port
 EXPOSE 8000
