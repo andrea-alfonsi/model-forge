@@ -91,7 +91,7 @@ const genericPagesRoute = createRoute({
 
 
 const routeTree = rootRoute.addChildren([datasetsRoute, modelsRoute.addChildren([newModelRoute, playgroundRoute, playgroundModelPickerRoute, indexModelRoute]), settingsRoute, genericPagesRoute])
-export const router = createRouter({ routeTree })
+export const router = createRouter({ routeTree, basepath: '/v1.0' })
 
 // Register types (so that the router works with TS without crutches)
 declare module '@tanstack/react-router' {
