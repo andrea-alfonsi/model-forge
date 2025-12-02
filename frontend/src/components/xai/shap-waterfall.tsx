@@ -1,4 +1,4 @@
-import { Bar, BarChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, Cell, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 // 1. Raw Feature Data Type
 interface RawFeatureContribution {
@@ -15,11 +15,16 @@ interface ChartDataPoint {
   isTotal?: boolean; // To identify the final score bar
 }
 
+const POSITIVE_COLOR = 'var(--chart-1)';
+const NEGATIVE_COLOR = 'var(--chart-2)';
+const BASELINE_COLOR = 'rgba(0,0,0,.2)';
+const TOTAL_COLOR = 'var(--primary)';
+
 const rawData: RawFeatureContribution[] = [
   { name: 'Age', contribution: -0.20 },
-  { name: 'Income', contribution: -0.70 },
+  { name: 'Income', contribution: +0.70 },
   { name: 'Education Years', contribution: -1.10 },
-  { name: 'Feature X', contribution: -0.90 },
+  { name: 'Feature X', contribution: +0.90 },
   { name: 'Employment Status: Employed', contribution: -0.60 },
 ];
 
@@ -67,21 +72,22 @@ const chartData = transformDataForWaterfall(rawData);
 export function ShapWaterfallChart({}){
 
   const finalScore = rawData.reduce((acc, curr) => acc + curr.contribution, 0);
+  const maxAbs = Math.round( Math.max( Math.abs(Math.min(...chartData.map(d => d.start))), Math.abs(Math.max(...chartData.map(d => d.end))) ) )
 
 
-  return <div className="h-[450px]">
+  return <div className="h-[300px]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={chartData.filter(d => !d.isTotal && d.contribution !== 0)} // Filter out Total and Baseline for the main chart
           layout="vertical"
           // Increased left margin to accommodate the long feature labels
-          margin={{ top: 10, right: 30, left: 160, bottom: 20 }} 
+          margin={{ top: 10, right: 30, left: 160, bottom: 10 }} 
         >
           
           <XAxis 
             type="number" 
             dataKey="end" // Use 'end' for domain calculation
-            domain={[-3.60, 0]} 
+            domain={[-maxAbs, +maxAbs]} 
             tickCount={5}
             tickLine={{ stroke: '#cccccc' }}
           />
@@ -100,25 +106,40 @@ export function ShapWaterfallChart({}){
               name === 'start' ? [] : [`${(props.payload.end).toFixed(3)}`, 'Final Value']
             }
           />
+
+          <ReferenceLine 
+            x={0} 
+            stroke={BASELINE_COLOR} 
+            strokeDasharray="3 3" 
+          />
           
-          {/* 1. The HIDDEN BAR (The Offset/Spacer) */}
           <Bar 
             dataKey="start" 
             stackId="a" 
             fill="transparent" 
             isAnimationActive={false}
           />
-          
-          {/* 2. The VISIBLE BAR (The Contribution) */}
+
           <Bar 
             dataKey="contribution" 
             stackId="a" 
-            fill="var(--primary)" 
-          />
+            radius={8} 
+          >
+            {
+              chartData
+                .filter(d => !d.isTotal && d.contribution !== 0)
+                .map((entry, index) => (
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={entry.contribution > 0 ? POSITIVE_COLOR : NEGATIVE_COLOR} 
+                  />
+                ))
+            }
+          </Bar>
 
           <ReferenceLine 
             x={finalScore} 
-            stroke="var(--chart-1)"
+            stroke={TOTAL_COLOR}
             strokeWidth={2}
           />
         </BarChart>

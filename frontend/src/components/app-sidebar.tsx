@@ -2,6 +2,7 @@ import * as React from "react"
 import {
   BookOpen,
   Bot,
+  CircleAlertIcon,
   Frame,
   LifeBuoy,
   Map,
@@ -25,6 +26,7 @@ import { VersionSwitcher } from "@/components/version-switcher"
 import { useAuth } from "@/contexts/AuthContext"
 import type { User } from "@/contexts/AuthContext"
 import { useVersion } from "@/contexts/VersionContext"
+import { Alert, AlertTitle } from "./ui/alert"
 
 
 
@@ -66,7 +68,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         items: [
           {
             title: "General",
-            url: "/settings",
+            url: "/settings/basic",
           },
           {
             title: "Team",
@@ -129,6 +131,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
+        <Alert className="w-4/5 mx-auto border-sky-600 text-sky-600 dark:border-sky-400 dark:text-sky-400">
+          <CircleAlertIcon />
+          <AlertTitle>This app is still in beta</AlertTitle>
+        </Alert>
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

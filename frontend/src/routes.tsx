@@ -18,6 +18,7 @@ import Datasets from "@/pages/Datasets"
 import Models from "@/pages/Models"
 import Index from "@/pages/Index"
 import Settings from "@/pages/Settings"
+import BasicSettings from "./pages/Settings/basic"
 import newModel from "@/pages/Models/newModel"
 import Playground,{PickModelPage} from "@/pages/Models/playground"
 
@@ -73,15 +74,22 @@ const playgroundRoute = createRoute({
 const playgroundModelPickerRoute = createRoute({
   getParentRoute: () => modelsRoute,
   path: '/playground',
-  component: () => <PickModelPage />,
+  component: () => <PickModelPage/>,
 })
 
 
 const settingsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/settings',
-  component: () => <Settings />,
+  component: () => <Settings/>,
 })
+
+const basicSettingsRoute = createRoute({
+  getParentRoute: () => settingsRoute,
+  path: '/basic',
+  component: () => <BasicSettings />,
+})
+
 
 const genericPagesRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -90,7 +98,18 @@ const genericPagesRoute = createRoute({
 })
 
 
-const routeTree = rootRoute.addChildren([datasetsRoute, modelsRoute.addChildren([newModelRoute, playgroundRoute, playgroundModelPickerRoute, indexModelRoute]), settingsRoute, genericPagesRoute])
+const routeTree = rootRoute.addChildren([
+  datasetsRoute, 
+  modelsRoute.addChildren([
+    newModelRoute, 
+    playgroundRoute, 
+    playgroundModelPickerRoute, 
+    indexModelRoute
+  ]), 
+  settingsRoute.addChildren([
+    basicSettingsRoute
+  ]), 
+  genericPagesRoute])
 export const router = createRouter({ routeTree, basepath: '/v1.0' })
 
 // Register types (so that the router works with TS without crutches)

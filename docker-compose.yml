@@ -131,16 +131,13 @@ services:
     depends_on:
       - jaeger
 
-      
-  # torchserve:
-  #   image: pytorch/torchserve:latest
-  #   container_name: torchserve
-  #   ports:
-  #     - "8080:8080"   # Inference API
-  #     - "8081:8081"   # Management API
-  #   volumes:
-  #     - ./models:/models
-  #   command: >
-  #     torchserve --start
-  #                --model-store /models
-  #                --models mymodel.mar
+  inference:
+    build:
+      context: ./inference
+      dockerfile: Dockerfile
+    container_name: inference
+    command: uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+    volumes:
+      - ./data:/data
+    ports:
+      - "8001:8001"

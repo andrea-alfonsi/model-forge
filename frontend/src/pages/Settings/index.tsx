@@ -1,7 +1,7 @@
 import { useAPI } from "@/contexts/ApiContext"
 import { InputWithDropdown } from "@/components/ui/input-with-list"
 
-const urls:any[] = []
+const urls: any[] = []
 
 export default function(){
   const {url, setUrl} = useAPI()
