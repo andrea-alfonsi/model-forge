@@ -81,12 +81,18 @@ const playgroundModelPickerRoute = createRoute({
 const settingsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/settings',
-  component: () => <Settings/>,
+  component: () => <Settings />,
+})
+
+const indexSettingsRoute = createRoute({
+  getParentRoute: () => settingsRoute,
+  path: '/',
+  component: () => <BasicSettings />,
 })
 
 const basicSettingsRoute = createRoute({
   getParentRoute: () => settingsRoute,
-  path: '/basic',
+  path: '/general',
   component: () => <BasicSettings />,
 })
 
@@ -107,6 +113,7 @@ const routeTree = rootRoute.addChildren([
     indexModelRoute
   ]), 
   settingsRoute.addChildren([
+    indexSettingsRoute,
     basicSettingsRoute
   ]), 
   genericPagesRoute])

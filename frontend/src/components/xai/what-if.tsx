@@ -34,7 +34,7 @@ interface MockApiResponse {
 }
 
 // --- MOCK API CALL SIMULATION ---
-const MOCK_PREDICTION_THRESHOLD = 70; // Internal ML score to flip prediction
+const MOCK_PREDICTION_THRESHOLD = 170; // Internal ML score to flip prediction
 
 /**
  * Simulates a backend service that calculates counterfactuals.
@@ -99,9 +99,9 @@ const generateCounterfactuals = (
 
 const INITIAL_FEATURES: InputFeatures = {
   Age: 32,
-  Income: 45000,
+  Income: 5000,
   Education: 'High School',
-  CreditScore: 600,
+  CreditScore: 60,
 };
 
 const INITIAL_PREDICTION: PredictionResult = 'Denied';
