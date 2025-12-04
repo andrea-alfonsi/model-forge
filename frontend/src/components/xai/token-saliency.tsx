@@ -131,7 +131,7 @@ export default function TokenSaliency({ text }: {text: string }){
 
         {saliencyData.length > 0 && (
           <>
-              <div className="border p-4 rounded-lg bg-white min-h-[150px] text-lg leading-relaxed shadow-inner">
+              <div className="border p-4 rounded-lg min-h-[150px] text-lg leading-relaxed shadow-inner">
                 {saliencyData.map((data: SaliencyItem, index: number) => (
                   <span 
                     key={index} 

@@ -43,7 +43,6 @@ const RUNS_PER_LOAD = 3; // <<< NEW: Number of runs to load per button click
  * The noise is slightly different for each run to simulate variability.
  */
 const generateModelRun = (featureKey: FeatureKey, runIndex: number): ModelRun => {
-  const seed = runIndex * 100;
   return Array.from({ length: TIME_STEPS }, (_, i) => {
     let value: number;
     // Introduce variability based on feature type and run index

@@ -2,7 +2,9 @@ import React, { createContext, useContext, useState, useCallback } from 'react';
 
 
 export interface AppSettings {
-  
+  theme: string,
+  language: string,
+  itemsPerPage: number
 }
 
 // Define the shape of the Context object
@@ -13,10 +15,10 @@ export interface SettingsContextType {
 }
 
 
-const DEFAULT_SETTINGS: AppSettings = {
+const DEFAULT_SETTINGS: AppSettings = JSON.parse( window.localStorage.getItem("app.settings") ?? 'null' ) ??
+{
   theme: 'light',
   language: 'en',
-  sidebarCollapsed: false,
   itemsPerPage: 10,
 };
 

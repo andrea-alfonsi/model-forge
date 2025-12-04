@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Zap, TrendingUp, XCircle, CheckCircle, Loader2 } from 'lucide-react';
 import { Label } from '../ui/label';
 import { Slider } from '../ui/slider';
@@ -108,7 +108,6 @@ const INITIAL_PREDICTION: PredictionResult = 'Denied';
 
 
 const App: React.FC = () => {
-  const [initialFeatures] = useState<InputFeatures>(INITIAL_FEATURES);
   const [currentFeatures, setCurrentFeatures] = useState<InputFeatures>(INITIAL_FEATURES);
   const [originalPrediction] = useState<PredictionResult>(INITIAL_PREDICTION);
   const [currentPrediction, setCurrentPrediction] = useState<PredictionResult>(INITIAL_PREDICTION);
@@ -150,11 +149,6 @@ const App: React.FC = () => {
       setIsLoading(false);
     }
   }, [currentFeatures]);
-
-  const originalFeaturesFormatted = useMemo(() => ({
-    ...initialFeatures,
-    Income: initialFeatures.Income.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }),
-  }), [initialFeatures]);
 
   return (
     <div className="min-h-screen p-6 sm:p-10 font-sans antialiased flex justify-center">
@@ -246,7 +240,7 @@ const App: React.FC = () => {
                 </div>
 
                 {/* Current Prediction */}
-                <div className="border p-4 rounded-lg bg-white shadow-sm md:col-span-2">
+                <div className="border p-4 rounded-lg shadow-sm md:col-span-2">
                   <p className="text-sm font-medium text-gray-500 flex items-center">
                     <Zap className="w-4 h-4 mr-1 text-indigo-500" />
                     Current Prediction
@@ -319,7 +313,7 @@ const App: React.FC = () => {
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="divide-y divide-gray-200">
                       {counterfactuals.map((cf, index) => (
                         <tr key={cf.id} className="hover:bg-indigo-50 transition duration-150">
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">

@@ -21,6 +21,7 @@ import Settings from "@/pages/Settings"
 import BasicSettings from "./pages/Settings/basic"
 import newModel from "@/pages/Models/newModel"
 import Playground,{PickModelPage} from "@/pages/Models/playground"
+import EndpointSettings from "./pages/Settings/EndpointSettings"
 
 
 const rootRoute = createRootRoute({
@@ -81,19 +82,19 @@ const playgroundModelPickerRoute = createRoute({
 const settingsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/settings',
-  component: () => <Settings />,
+  component: () => <Outlet />,
 })
 
 const indexSettingsRoute = createRoute({
   getParentRoute: () => settingsRoute,
-  path: '/',
+  path: '/general',
   component: () => <BasicSettings />,
 })
 
 const basicSettingsRoute = createRoute({
   getParentRoute: () => settingsRoute,
-  path: '/general',
-  component: () => <BasicSettings />,
+  path: '/endpoint',
+  component: () => <EndpointSettings />,
 })
 
 
