@@ -17,7 +17,6 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import Datasets from "@/pages/Datasets"
 import Models from "@/pages/Models"
 import Index from "@/pages/Index"
-import Settings from "@/pages/Settings"
 import BasicSettings from "./pages/Settings/basic"
 import newModel from "@/pages/Models/newModel"
 import Playground,{PickModelPage} from "@/pages/Models/playground"
