@@ -75,13 +75,13 @@ export function ShapWaterfallChart({}){
   const maxAbs = Math.round( Math.max( Math.abs(Math.min(...chartData.map(d => d.start))), Math.abs(Math.max(...chartData.map(d => d.end))) ) )
 
 
-  return <div className="h-[300px]">
+  return <div className="h-[500px]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={chartData.filter(d => !d.isTotal && d.contribution !== 0)} // Filter out Total and Baseline for the main chart
           layout="vertical"
           // Increased left margin to accommodate the long feature labels
-          margin={{ top: 10, right: 30, left: 160, bottom: 10 }} 
+          margin={{ top: 10, right: 30, left: 60, bottom: 10 }} 
         >
           
           <XAxis 

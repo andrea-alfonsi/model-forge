@@ -24,6 +24,7 @@ import WhatIf from "@/components/xai/what-if"
 import JSONForm from '@/components/json-form'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
+import TokenSaliency from '@/components/xai/token-saliency'
 
 const route = getRouteApi('/models/playground/$model')
 
@@ -193,7 +194,15 @@ export default function(){
                   <UMapScatter data={highlightedExamples.map( el  => ({...el, coordinates: el.values}))}/>
                 </CardContent>
               </Card>
-              <Card className="col-span-3 row-span-1">
+              <Card className="col-span-2 row-span-1">
+                <CardHeader>
+                  <CardTitle>Token saliency</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  < TokenSaliency text={"The generative AI  model quickly summarized the complex financial report, highlighting key risks and opportunities for the investors."}/>
+                </CardContent>
+              </Card>
+              <Card className="col-span-1 row-span-1">
                 <CardHeader>
                   <CardTitle>Feature contribution</CardTitle>
                 </CardHeader>
