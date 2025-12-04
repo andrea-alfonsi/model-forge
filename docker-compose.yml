@@ -32,6 +32,7 @@ services:
         - DATABASE_URL=postgresql://user:password@db:5432/mydb
         - CELERY_BROKER_URL=redis://redis:6379/0
         - OTEL_SERVICE_NAME=backend
+        - TRITONX_URL=inference:8005
       depends_on:
         db:
           condition: service_healthy
@@ -131,14 +132,12 @@ services:
     depends_on:
       - jaeger
 
-  inference:
+  modelserve:
     build:
-      context: ./inference
-      dockerfile: Dockerfile
-    container_name: inference
+      context: .
+      dockerfile: ./modelserve/Dockerfile
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
-      - ./inference/models:/models
+      - ./modelserve/models:/models
     ports:
       - "8005:8000"
-      - "8001:8001"
-      - "8002:8002"
